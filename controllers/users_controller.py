@@ -2,11 +2,13 @@ from flask import jsonify, request
 
 from custom_exceptions.not_found_exception import NotFoundException
 from models import User
+from users_sqlite_repository import UsersSQLiteRepository
 
 
 def get_all_users_handler():
     try:
-        users = User.get_all()
+        repo = UsersSQLiteRepository()
+        users = repo.get_all()
         # HUOM. tämä on esimerkki siitä, miten jsonin voi luoda
         # modelissa, mutta SE EI OLE SUOSITELTAVA TAPA,
         # koska mooelin tehtävä ei ole huolehtia responsen content-typesta
@@ -20,7 +22,8 @@ def add_new_user_handler():
     try:
         req_data = request.get_json()
         new_user = User(req_data['first_name'], req_data['last_name'], req_data['username'])
-        new_user.save()
+        repo = UsersSQLiteRepository()
+        repo.save(new_user)
         return jsonify({'id': new_user.id, 'first_name': new_user.firstname, 'last_name': new_user.lastname,
                         'username': new_user.username})
     except Exception as e:
@@ -29,7 +32,8 @@ def add_new_user_handler():
 
 def update_user_handler(_id):
     try:
-        existing_user = User.get_by_id(int(_id))
+        repo = UsersSQLiteRepository()
+        existing_user = repo.get_by_id(_id)
         req_data = request.get_json()
         new_first_name = req_data.get('first_name', existing_user.firstname)
         new_last_name = req_data.get('last_name', existing_user.lastname)
@@ -39,7 +43,7 @@ def update_user_handler(_id):
         existing_user.lastname = new_last_name
         existing_user.username = new_username
 
-        existing_user.save()
+        repo.save(existing_user)
 
         return jsonify(
             {'id': existing_user.id, 'first_name': existing_user.firstname, 'last_name': existing_user.lastname,
@@ -58,7 +62,8 @@ def update_user_handler(_id):
 
 def get_user_handler(_id):
     try:
-        existing_user = User.get_by_id(int(_id))
+        repo = UsersSQLiteRepository()
+        existing_user = repo.get_by_id(_id)
 
 
         return jsonify(
@@ -77,8 +82,10 @@ def get_user_handler(_id):
 
 def delete_user_handler(_id):
     try:
-        existing_user = User.get_by_id(int(_id))
-        existing_user.remove()
+        repo = UsersSQLiteRepository()
+        existing_user = repo.get_by_id(_id)
+        repo.remove(existing_user.id)
+
         return "", 204
         # affected_rows =  User.delete_by_id(_id)
         #if affected_rows == 0:
