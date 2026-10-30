@@ -19,13 +19,18 @@ Tehdään tämä seuraavaksi käyttäen MVC:tä.
 
 """
 
+def some_function(a, b, c, d=0, e=0, f=0):
+    pass
+
+some_function("a", "b", "c", f=1, d=2, e=3)
+
 
 # Hakee kaikki käyttäjät JSON-muodossa
 app.add_url_rule('/api/users', 'get_all_users', users_controller.get_all_users_handler, methods=['GET'])
 app.add_url_rule('/api/users', 'add_new_user', users_controller.add_new_user_handler, methods=['POST'])
 
 # Hakee käyttäjän id:n perusteella
-app.add_url_rule('/api/users/<_id>', 'get_user_by_id', users_controller.get_user_handler, methods=['GET'])
+app.add_url_rule('/api/users/<_id>/<jokumuu>', 'get_user_by_id', users_controller.get_user_handler, methods=['GET'])
 
 # Muokkaa id:n mukaan valitun käyttäjän tietoja
 # request data lähetettävä JSON-muodossa

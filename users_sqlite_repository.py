@@ -10,20 +10,8 @@ class UsersSQLiteRepository:
     # HUOM: tietokantayhteyden avaaminen kannattaa tehdä toisin
     # mutta käymme sen läpi vasta Dependency Injection-osiossa
 
-    def __init__(self):
-        self.connection = sqlite3.connect('tuntiharjoitus1.db')
-
-
-    # suljetaan tietokantayhteys destruktorissa
-
-
-    # HUOM: tietokantayhteyden sulkeminen kannattaa tehdä toisin
-    # mutta käymme sen läpi vasta Dependency Injection-osiossa
-
-    def __del__(self):
-        if self.connection is not None:
-            self.connection.close()
-
+    def __init__(self, con):
+        self.connection = con
 
     def get_all(self):
 
@@ -47,7 +35,6 @@ class UsersSQLiteRepository:
             users_list.append(User(user[1], user[2], user[3], _id=user[0]))
 
         return users_list
-
 
     def _update(self, user):
         try:
@@ -88,7 +75,6 @@ class UsersSQLiteRepository:
         if existing_user is None:
             raise NotFoundException()
         return User(existing_user[1], existing_user[2], existing_user[3], _id=existing_user[0])
-
 
     def remove(self, _id):
         try:
